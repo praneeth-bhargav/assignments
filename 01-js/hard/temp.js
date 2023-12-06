@@ -1,0 +1,1 @@
+console.log(typeof eval('10/0'));
