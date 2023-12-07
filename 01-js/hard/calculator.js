@@ -39,35 +39,48 @@ class Calculator {
   getResult(){
     return this.result;
   }
-  evalu(arr) {
-    // let res=0;
-    // let nxt=[];
-    
-    // for(let i=1;i<arr.length;i+=2){
-    //   if(arr[i]==='*'){
-    //     if(nxt.length===0 || typeof nxt[nxt.length-1]!=='number'){
-    //       nxt.push(arr[i-1]*arr[i+1]);          
-    //     }else{
-    //       nxt[nxt.length-1]*=arr[i+1];
-    //     }
-    //   }else if(arr[i]==='/'){
-    //     if(nxt.length===0 || typeof nxt[nxt.fill]!=='number'){
-    //       if(arr[i+1]===0)throw new Error("Div by zero error");
-    //         nxt.push(arr[i-1]/arr[i+1]);
-    //     }else{
-    //       nxt[nxt.length-1]/=arr[i+1];
-    //     }
-    //   }else{
-    //     nxt.push(arr[i-1]);
-    //     nxt.push(arr[i]);
-    //   }
-    // }
-    // res+=nxt[0];
-    // for(let i=1;i<nxt.length;i+=2){
-    //   res+=(nxt[i]==='+'?1:-1)*nxt[i+1];
-    // }
-    // return res;
+  evalu(arr){
     return eval(arr);
+  }
+  evalu_arr(arr){
+    let res=0;
+    let nxt=[];
+    let i=1;
+    let dont_add=false;
+    for(;i<arr.length;i+=2){
+      if(arr[i]==='*'){
+        if(nxt.length===0 || typeof nxt[nxt.length-1]!=='number'){
+          nxt.push(arr[i-1]*arr[i+1]);
+          if(i+1===arr.length-1){
+            dont_add=true;
+          }          
+        }else{
+          nxt[nxt.length-1]*=arr[i+1];
+        }
+      }else if(arr[i]==='/'){
+        if(nxt.length===0 || typeof nxt[nxt.fill]!=='number'){
+          if(arr[i+1]===0)throw new Error("Div by zero error");
+            nxt.push(arr[i-1]/arr[i+1]);
+            if(i+1===arr.length-1){
+              dont_add=true;
+            }
+        }else{
+          nxt[nxt.length-1]/=arr[i+1];
+        }
+      }else{
+        if(i===1 || typeof nxt[nxt.length-1]!=='number')
+          nxt.push(arr[i-1]);
+        nxt.push(arr[i]);
+      }
+    }
+    if(!dont_add){
+      nxt.push(arr[i-1]);
+    }
+    res+=nxt[0];
+    for(let i=1;i<nxt.length;i+=2){
+      res+=(nxt[i]==='+'?1:-1)*nxt[i+1];
+    }
+    return res;
   }
   calculate(s){
     s=s.replace(/\s/g, '');
@@ -91,14 +104,21 @@ class Calculator {
           throw new Error(`Invalid operand\operator before ) at ${i}`);
         }else{
           let res="";
+          let arr=[];
           while(st.length!==0 && st[st.length-1]!=='('){
-            res=String(st.pop())+res;
+            let c=st.pop();
+            res=String(c)+res;
+            arr.unshift(c);
           }
           if(st.length===0){
             throw new Error(`No closing bracket for ) ${i}`);
           }
           st.pop();
-          st.push(this.evalu(res));
+          let final=this.evalu_arr(arr);
+          if(final===NaN){
+            throw new Error( `calcu error at ${arr}`);
+          }
+          st.push(final);
         }
       }else if(s[i]>='0' && s[i]<='9'){
         let before=st[st.length-1];
@@ -123,15 +143,20 @@ class Calculator {
         throw new Error(`Invalid operand at ${i}`);
       }
     }
-    let res="";
+    let res="",arr=[];
     while(st.length!==0){
       let poppedValue = st.pop();
       if (true) {
+          if(typeof poppedValue!=='number' && operators.indexOf(poppedValue)===-1){
+            throw new Error(`parsing error ${poppedValue} typeof ${typeof poppedValue}`);
+          }
           res = String(poppedValue) + res;
+          arr.unshift(poppedValue);
       }
     }
-     console.log(res);
-    this.result=this.evalu(res);
+    this.result=this.evalu_arr(arr);
   }
 }
+let temp=new Calculator();
+temp.calculate('10 +   2 *    (   6 - (4 + 1) / 2) + 7');
 module.exports = Calculator;
