@@ -1,0 +1,12 @@
+function printCounter(i, limit) {
+  console.log(i);
+
+  if (i < limit) {
+    setTimeout(() => {
+      printCounter(i + 1, limit);
+    }, 1000); // 1000 milliseconds (1 second) delay
+  }
+}
+
+// Example usage: print numbers from 0 to 9 with a 1-second delay
+printCounter(0, 10);
