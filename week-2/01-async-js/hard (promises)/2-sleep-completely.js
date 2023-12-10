@@ -4,5 +4,10 @@
  */
 
 function sleep (seconds) {
+    const now=Date.now();
+    while(Date.now()-now<seconds){
 
+    }
 }
+sleep(3000);
+console.log("now running after",3000,"seconds");
