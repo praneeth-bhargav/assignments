@@ -10,3 +10,5 @@ function wait(n) {
 }
 let prom=wait(2);
 prom.then(res=>console.log(res)).catch(()=>console.log("error"));
+
+module.exports = wait;
