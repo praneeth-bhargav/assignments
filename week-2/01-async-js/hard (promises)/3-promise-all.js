@@ -5,32 +5,30 @@
  */
 
 
-function waitOneSecond() {
+function waitOneSecond(a) {
     return new Promise((resolve,reject)=>{
-        setTimeout(()=>resolve("Resolved after 1 second"),1000);
+        setTimeout(()=>resolve("Resolved after 1 second"),a*1000);
     })
 }
 
-function waitTwoSecond() {
+function waitTwoSecond(b) {
     return new Promise((resolve,reject)=>{
-        setTimeout(()=>resolve("Resolved after 2 second"),2000);
+        setTimeout(()=>resolve(),b*1000);
     })
-function wait2(t) {
-
 }
-
-function waitThreeSecond() {
+function waitThreeSecond(c) {
     return new Promise((resolve,reject)=>{
-        setTimeout(()=>resolve("Resolved after 3 second"),3000);
+        setTimeout(()=>resolve(),c*1000);
     })
 }
 
-function calculateTime() {
+function calculateTime(a,b,c) {
     let date=Date.now();
-    Promise.all([waitOneSecond(),waitTwoSecond(),waitThreeSecond()]).then(()=>{
-        console.log(Date.now()-date, "millisecond");;
+    return Promise.all([waitOneSecond(a),waitTwoSecond(b),waitThreeSecond(c)]).then(()=>{
+        // console.log(, "millisecond");;
+        return Date.now()-date;
     }).catch((err)=>{
         console.log(err);
     })
 }
-calculateTime();
+module.exports = calculateTime;

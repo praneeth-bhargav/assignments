@@ -5,14 +5,16 @@
  */
 
 function sleep (seconds) {
-    const now=Date.now();
-    while(Date.now()-now<seconds){
+    return new Promise((resolve,reject)=>{
+        const now=Date.now();
+        while(Date.now()-now<seconds){
 
-    }
+        }
+        resolve();
+    })
+    
 }
 sleep(3000);
-console.log("now running after",3000,"seconds");
-function sleep(milliseconds) {
-}
+// console.log("now running after",3000,"seconds");
 
 module.exports = sleep;
