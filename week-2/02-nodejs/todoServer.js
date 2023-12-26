@@ -40,10 +40,75 @@
   Testing the server - run `npm run test-todoServer` command in terminal
  */
   const express = require('express');
-  const bodyParser = require('body-parser');
-  
+const { readFile, writeFile } = require('fs');
+  const fs=require('fs').promises;
   const app = express();
+  app.use(express.json());
+  async function getFromFile() {
+    const data = await fs.readFile("temp.json", "utf-8");
+    return JSON.parse(data);
+  }
+  app.get("/todos", async (req, res) => {
+    const todos_obj = await getFromFile();
+    // let x=;
+    res.status(200).json(Object.values(todos_obj));
+  });
+  app.get("/todos/:id", async (req, res) => {
+    const todos_obj = await getFromFile();
+    let id = req.params.id;
+    if (Object.keys(todos_obj).includes(id)) {
+      res.status(200).json(todos_obj[id]);
+    } else {
+      res.status(404).send();
+    }
+  });
+  app.post("/todos", async (req, res) => {
+    let todos_obj = await getFromFile();
+    const id = Math.floor(Math.random() * 10000) + 1;
+    todos_obj[id] = req.body;
+    await fs.writeFile("temp.json", JSON.stringify(todos_obj), "utf-8");
+    res.status(201).json({id:`${id}`});
+  });
+  app.put("/todos/:id", async (req, res) => {
+    let todos_obj = await getFromFile();
+    const id = req.params.id;
+    if (todos_obj[id]) {
+      todos_obj[id].title = req.body.title;
+      todos_obj[id].description = req.body.description;
+      console.log(todos_obj);
+      try{
+        await fs.writeFile("temp.json", JSON.stringify(todos_obj), {
+          encoding: "utf-8",
+        });
   
-  app.use(bodyParser.json());
+      }catch(err){
+        console.log(err);
+      }
+      res.status(200).json();
+    } else {
+      res.status(404).send();
+    }
+  });
   
+  app.delete("/todos/:id",async(req,res)=>{
+    const id = req.params.id;
+    let todos_obj = await getFromFile();
+    if (todos_obj[id]) {
+      delete todos_obj[id];
+      try{
+        await fs.writeFile("temp.json", JSON.stringify(todos_obj), {
+          encoding: "utf-8",
+        });
+  
+      }catch(err){
+        console.log(err);
+      }
+      res.status(200).json();
+    } else {
+      res.status(404).send();
+    }
+  })
+  app.get('*', (req, res) => {
+    res.send('This is the default handler for non-required URLs.');
+  });
   module.exports = app;
