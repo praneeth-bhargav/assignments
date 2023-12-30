@@ -40,7 +40,7 @@
   Testing the server - run `npm run test-todoServer` command in terminal
  */
   const express = require('express');
-const { readFile, writeFile } = require('fs');
+// const { readFile, writeFile } = require('fs').promises;
   const fs=require('fs').promises;
   const app = express();
   app.use(express.json());
@@ -66,6 +66,9 @@ const { readFile, writeFile } = require('fs');
     let todos_obj = await getFromFile();
     const id = Math.floor(Math.random() * 10000) + 1;
     todos_obj[id] = req.body;
+    if(!req.body.completed){
+      todos_obj[id]=false;
+    }
     await fs.writeFile("temp.json", JSON.stringify(todos_obj), "utf-8");
     res.status(201).json({id:`${id}`});
   });
@@ -73,8 +76,12 @@ const { readFile, writeFile } = require('fs');
     let todos_obj = await getFromFile();
     const id = req.params.id;
     if (todos_obj[id]) {
-      todos_obj[id].title = req.body.title;
-      todos_obj[id].description = req.body.description;
+      if(req.body.title)
+        todos_obj[id].title = req.body.title;
+      if(req.body.description)
+        todos_obj[id].description = req.body.description;
+      if(req.body.completed)
+      todos_obj[id].completed = req.body.completed;
       console.log(todos_obj);
       try{
         await fs.writeFile("temp.json", JSON.stringify(todos_obj), {
