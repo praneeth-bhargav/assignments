@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .grid-container {
+        height: 100vh;
+      display: grid;
+      grid-template-rows: 100px 100px; /* Define the grid rows */
+      gap: 10px;
+    }
+
+    .grid-item {
+      background-color: lightblue;
+      /* Specify the grid row where the item should span */
+      grid-row: span 2; /* It spans 2 rows */
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-container">
+  <div class="grid-item">Spanning Div</div>
+  <div class="grid-item">Normal Div</div>
+</div>
+
+</body>
+</html>

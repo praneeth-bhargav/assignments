@@ -2,21 +2,71 @@
 <html>
 
 <head>
+  <style>
+    .todo{
+      display: flex;
+      flex-direction: column;
+    }
+    .todos{
+      display: flex;
+      flex-direction: column;
+    }
+    .divider {
+  height: 1px;
+  background-color: #ccc; /* Adjust the color as needed */
+  margin: 10px 0; /* Adjust the margin as needed */
+}
+  </style>
   <script>
+    function isEqual(obj1, obj2) {
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      if (keys1.length !== keys2.length) {
+        return false;
+      }
+
+      for (const key of keys1) {
+        if (obj1[key] !== obj2[key]) {
+          return false;
+        }
+      }
+      
+    return true;
+  }
+
     let globalId = 1;
     let todoState = [];
     let oldTodoState = [];
 
-    function addTodoToDom() {
-      
+    function addTodoToDom(todo) {
+      const elem=document.createElement("div");
+      elem.setAttribute("id",todo.id);
+      elem.setAttribute("class","todo");
+      const title=document.createElement("div");
+      title.innerHTML=todo.title;
+      const description=document.createElement("div");
+      description.innerHTML=todo.description;
+      elem.appendChild(title)
+      elem.appendChild(description);
+      const divider=document.createElement("div");
+      divider.setAttribute("class","divider");
+      elem.appendChild(divider);
+      document.getElementById("todos").appendChild(elem);
     }
 
     function removeTodoFromDom(todo) {
-      
+      const elem=document.getElementById(`${oldTodo.id}`);
+      elem.remove();
     }
-
-    function updateTodoInDom(oldTodo, newTodo) {
-        
+    function updateTodoInDom(oldTodo, newTodo){
+        const elem=document.getElementById(`${oldTodo.id}`);
+        if(oldTodo.title!==newTodo.title){
+          elem.children[0].innerHTML=newTodo.title;
+        }
+        if(oldTodo.description!==newTodo.description){
+          elem.children[1].innerHTML=newTodo.description;
+        }
     }
 
     function updateState(newTodos) {
@@ -31,7 +81,37 @@
       // calculate these 3 arrays
       // call addTodo, removeTodo, updateTodo functions on each of the
       // elements
-      oldTodoState = newTodos;
+      const oldMap={},newMap={};
+      newTodos.forEach(todo=>{
+        newMap[todo.id]=todo;
+      })
+      oldTodoState.forEach(oldTodo=>{
+        if(!(Object.keys(newMap).includes(String(oldTodo.id)))){
+          deleted.push(oldTodo);
+        }
+        oldMap[oldTodo.id]=oldTodo;
+      })
+      //added and updated
+      newTodos.forEach((todo)=>{
+        if(Object.keys(oldMap).includes(String(todo.id))){
+          if(JSON.stringify(todo)!==JSON.stringify(oldMap[todo.id])){
+            updated.push(todo);
+          }
+        }else{
+          added.push(todo);
+        }
+      });
+      added.map((item,i)=>{
+        addTodoToDom(item);
+      })
+      deleted.map((item,i)=>{
+        removeTodoFromDom(item);
+      })
+      updated.map((item,i)=>{
+        updateTodoInDom(item);
+      })
+      
+      oldTodoState = newTodos.slice();
     }
 
     function addTodo() {
@@ -53,7 +133,7 @@
   <button onclick="addTodo()">Add todo</button>
   <br /> <br />
 
-  <div id="todos">
+  <div id="todos" class="todos">
 
   </div>
 </body>
